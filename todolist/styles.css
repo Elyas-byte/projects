@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 50px;
+    padding: 0;
+}
+
+#app {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 1000px;
+}
+
+#projects-list, #todos-list {
+    width: 45%;
+    padding: 10px;
+}
+
+button {
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+li:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.05); 
+}
+
+li:active {
+    transform: scale(1); 
+}
+
+li.selected {
+    background-color: #007BFF;
+    color: white;
+    border-color: #007BFF;
+}
+
+ul#project-list {
+    padding-top: 20px;
+}

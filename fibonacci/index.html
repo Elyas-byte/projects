@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fibonacci Visualizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    input, button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+
+    #visualizer {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .node {
+      background: #3498db;
+      color: white;
+      font-weight: bold;
+      padding: 1rem;
+      border-radius: 5px;
+      margin: 0.5rem;
+      min-width: 60px;
+      position: relative;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+    }
+
+    .node.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .arrow {
+      width: 30px;
+      height: 2px;
+      background: black;
+      margin: 0 5px;
+      align-self: center;
+    }
+
+    .sequence {
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fibonacci Sequence Visualizer</h1>
+  <input type="number" id="fibCount" value="8" min="1" max="50">
+  <button onclick="startVisualization()">Start</button>
+
+  <div id="visualizer"></div>
+
+  <script>
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function startVisualization() {
+      const n = parseInt(document.getElementById('fibCount').value);
+      const container = document.getElementById('visualizer');
+      container.innerHTML = '';
+
+      if (n < 1) return;
+
+      const fib = [0, 1];
+
+      for (let i = 2; i < n; i++) {
+        fib.push(fib[i - 1] + fib[i - 2]);
+      }
+
+      const sequence = fib.slice(0, n);
+
+      for (let i = 0; i < sequence.length; i++) {
+        if (i > 0) {
+          const arrow = document.createElement('div');
+          arrow.className = 'arrow';
+          container.appendChild(arrow);
+        }
+
+        const node = document.createElement('div');
+        node.className = 'node';
+        node.innerText = sequence[i];
+        container.appendChild(node);
+
+        await sleep(400);
+        node.classList.add('visible');
+      }
+    }
+  </script>
+</body>
+</html>

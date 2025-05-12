@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HashMap</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>HashMap</h1>
+    <div class="form">
+      <input id="key" type="text" placeholder="Key" />
+      <input id="value" type="text" placeholder="Value" />
+      <button onclick="addEntry()">Set</button>
+      <button onclick="getEntry()">Get</button>
+      <button onclick="removeEntry()">Remove</button>
+    </div>
+
+    <div class="output">
+      <h2>Output</h2>
+      <pre id="output"></pre>
+    </div>
+
+    <div class="methods">
+      <button onclick="showAll()">Show Entries</button>
+      <button onclick="clearMap()">Clear</button>
+      <button onclick="showKeys()">Keys</button>
+      <button onclick="showValues()">Values</button>
+      <button onclick="showLength()">Length</button>
+    </div>
+  </div>
+
+  <script src="hashmap.js"></script>
+  <script>
+    const test = new HashMap();
+
+    function addEntry() {
+      const key = document.getElementById('key').value;
+      const value = document.getElementById('value').value;
+      test.set(key, value);
+      display(`Set ${key} => ${value}`);
+    }
+
+    function getEntry() {
+      const key = document.getElementById('key').value;
+      const value = test.get(key);
+      display(value !== null ? `Get ${key} => ${value}` : `${key} not found`);
+    }
+
+    function removeEntry() {
+      const key = document.getElementById('key').value;
+      const success = test.remove(key);
+      display(success ? `${key} removed.` : `${key} not found.`);
+    }
+
+    function showAll() {
+      display(JSON.stringify(test.entries(), null, 2));
+    }
+
+    function clearMap() {
+      test.clear();
+      display("HashMap cleared.");
+    }
+
+    function showKeys() {
+      display("Keys: " + JSON.stringify(test.keys()));
+    }
+
+    function showValues() {
+      display("Values: " + JSON.stringify(test.values()));
+    }
+
+    function showLength() {
+      display("Length: " + test.length());
+    }
+
+    function display(message) {
+      document.getElementById('output').textContent = message;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Knight's Travails Visualizer</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: sans-serif;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      border: 2px solid #333;
+      margin: 20px 0;
+    }
+
+    .square {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .white {
+      background-color: #eee;
+    }
+
+    .black {
+      background-color: #888;
+    }
+
+    .start {
+      background-color: green !important;
+      color: white;
+    }
+
+    .end {
+      background-color: red !important;
+      color: white;
+    }
+
+    .path {
+      background-color: yellow !important;
+      color: black;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    .info {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Knight's Travails</h1>
+  <div class="board" id="board"></div>
+  <div class="info" id="info">Click to choose start and end squares</div>
+
+  <script>
+    const board = document.getElementById('board');
+    const info = document.getElementById('info');
+    let start = null;
+    let end = null;
+
+    // Initialize board
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        const square = document.createElement('div');
+        square.className = `square ${(x + y) % 2 === 0 ? 'white' : 'black'}`;
+        square.dataset.x = x;
+        square.dataset.y = y;
+        square.addEventListener('click', () => handleClick(x, y, square));
+        board.appendChild(square);
+      }
+    }
+
+    function handleClick(x, y, square) {
+      clearHighlights();
+      if (!start) {
+        start = [x, y];
+        square.classList.add('start');
+        info.textContent = 'Select end square';
+      } else if (!end) {
+        end = [x, y];
+        square.classList.add('end');
+        const path = knightMoves(start, end);
+        displayPath(path);
+        info.textContent = `You made it in ${path.length - 1} moves!`;
+      } else {
+        start = null;
+        end = null;
+        clearHighlights();
+        info.textContent = 'Click to choose start and end squares';
+      }
+    }
+
+    function clearHighlights() {
+      [...document.querySelectorAll('.square')].forEach(sq => {
+        sq.classList.remove('start', 'end', 'path');
+      });
+    }
+
+    function knightMoves(start, end) {
+      const directions = [
+        [1, 2], [2, 1], [-1, 2], [-2, 1],
+        [1, -2], [2, -1], [-1, -2], [-2, -1]
+      ];
+
+      const isValid = (x, y) => x >= 0 && x < 8 && y >= 0 && y < 8;
+
+      const visited = new Set();
+      const queue = [[start, [start]]];
+
+      while (queue.length > 0) {
+        const [[x, y], path] = queue.shift();
+        const key = `${x},${y}`;
+        if (visited.has(key)) continue;
+        visited.add(key);
+
+        if (x === end[0] && y === end[1]) return path;
+
+        for (const [dx, dy] of directions) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (isValid(nx, ny)) {
+            queue.push([[nx, ny], [...path, [nx, ny]]]);
+          }
+        }
+      }
+      return [];
+    }
+
+    function displayPath(path) {
+      path.forEach(([x, y], index) => {
+        const square = document.querySelector(`.square[data-x="${x}"][data-y="${y}"]`);
+        if (index === 0) {
+          square.classList.add('start');
+        } else if (index === path.length - 1) {
+          square.classList.add('end');
+        } else {
+          square.classList.add('path');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library System</title>
+</head>
+
+<body>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #app {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #new-book-form {
+            margin-top: 20px;
+        }
+
+        #new-book-form input,
+        #new-book-form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+
+        #new-book-form input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        #library {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .book-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            position: relative;
+        }
+
+        .book-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .book-card p {
+            margin-bottom: 10px;
+        }
+
+        .book-card button {
+            background-color: #f44336;
+            margin-top: 10px;
+        }
+
+        .book-card button.toggle-read {
+            background-color: #ff9800;
+        }
+
+        .book-card button:hover {
+            background-color: #e53935;
+        }
+
+        .book-card button.toggle-read:hover {
+            background-color: #ff5722;
+        }
+
+        .book-card button.remove-book:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+    <div id="app">
+        <h1>My Book Library</h1>
+
+        <button id="new-book-btn">Add New Book</button>
+
+        <form id="new-book-form" style="display: none;">
+            <input type="text" id="book-name" placeholder="Book Title" required />
+            <input type="text" id="book-author" placeholder="Author" required />
+            <input type="number" id="book-pages" placeholder="Pages" required />
+            <label>
+                <input type="checkbox" id="book-read" /> Read
+            </label>
+            <button type="submit">Add Book</button>
+        </form>
+
+        <div id="library"></div>
+    </div>
+
+    <script>
+        const myLibrary = [];
+
+        // Book Constructor
+        function Book(name, author, pages, read = false) {
+            this.Name = name;
+            this.Author = author;
+            this.Pages = pages;
+            this.Read = read; // true or false
+
+            // Info method to display specific attributes
+            this.info = function (name = true, author = true, pages = true, read = true) {
+                let n = name === false ? 0 : 1;
+                let a = author === false ? 0 : 2;
+                let p = pages === false ? 0 : 4;
+                let r = read === false ? 0 : 8;
+                let params = n + a + p + r;
+                switch (params) {
+                    case 15: return `${this.Name}, ${this.Author}, ${this.Pages}, ${this.Read}`;
+                    case 14: return `${this.Author}, ${this.Pages}, ${this.Read}`;
+                    case 13: return `${this.Name}, ${this.Pages}, ${this.Read}`;
+                    case 12: return `${this.Name}, ${this.Author}, ${this.Read}`;
+                    case 11: return `${this.Name}, ${this.Author}, ${this.Pages}`;
+                    case 10: return `${this.Author}, ${this.Pages}`;
+                    case 9: return `${this.Name}, ${this.Read}`;
+                    case 8: return `${this.Read}`;
+                    case 7: return `${this.Name}, ${this.Author}`;
+                    case 6: return `${this.Name}, ${this.Pages}`;
+                    case 5: return `${this.Name}, ${this.Author}, ${this.Pages}`;
+                    case 4: return `${this.Pages}`;
+                    case 3: return `${this.Name}, ${this.Author}`;
+                    case 2: return `${this.Author}`;
+                    case 1: return `${this.Name}`;
+                    default: return `${this.Name}, ${this.Author}, ${this.Pages}, ${this.Read}`;
+                }
+            };
+
+            // Method to toggle the read status
+            this.toggleReadStatus = function () {
+                this.Read = !this.Read;
+            };
+        }
+
+        function addBookToLibrary(name, author, pages, read = false) {
+            const newBook = new Book(name, author, pages, read);
+            myLibrary.push(newBook);
+        }
+
+        function displayBooks() {
+            const libraryContainer = document.getElementById('library');
+            libraryContainer.innerHTML = ''; 
+
+            myLibrary.forEach((book, index) => {
+                const bookCard = document.createElement('div');
+                bookCard.classList.add('book-card');
+                bookCard.dataset.index = index; 
+
+                bookCard.innerHTML = `
+            <h3>${book.Name}</h3>
+            <p>Author: ${book.Author}</p>
+            <p>Pages: ${book.Pages}</p>
+            <p>Status: ${book.Read ? 'Read' : 'Not Read'}</p>
+            <button class="toggle-read">Toggle Read Status</button>
+            <button class="remove-book">Remove Book</button>
+        `;
+
+                // Toggle read status button
+                bookCard.querySelector('.toggle-read').addEventListener('click', function () {
+                    const index = bookCard.dataset.index;
+                    myLibrary[index].toggleReadStatus();
+                    displayBooks(); 
+                });
+
+                bookCard.querySelector('.remove-book').addEventListener('click', function () {
+                    const index = bookCard.dataset.index;
+                    myLibrary.splice(index, 1); // Remove the book from the array
+                    displayBooks(); 
+                });
+
+                libraryContainer.appendChild(bookCard);
+            });
+        }
+
+        document.getElementById('new-book-btn').addEventListener('click', function () {
+            const form = document.getElementById('new-book-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('new-book-form').addEventListener('submit', function (event) {
+            event.preventDefault(); 
+            const name = document.getElementById('book-name').value;
+            const author = document.getElementById('book-author').value;
+            const pages = document.getElementById('book-pages').value;
+            const read = document.getElementById('book-read').checked;
+
+            addBookToLibrary(name, author, pages, read);
+            displayBooks(); // Re-render the books
+            document.getElementById('new-book-form').reset(); 
+            document.getElementById('new-book-form').style.display = 'none'; 
+        });
+
+        // Initial Books
+        addBookToLibrary('Diary of a Wimpy Kid', 'Jeff Kinney', 226, true);
+        addBookToLibrary('Harry Potter and the Sorcerer\'s Stone', 'J.K. Rowling', 309, false);
+        addBookToLibrary('The Hunger Games', 'Suzanne Collins', 374, false);
+        addBookToLibrary('The Great Gatsby', 'F. Scott Fitzgerald', 180, false);
+
+        displayBooks(); 
+
+    </script>
+</body>
+
+</html>
+
